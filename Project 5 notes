@@ -1,0 +1,515 @@
+Git- version control system
+goes in a git repository
+distributed version control system
+In console...
+git --help
+
+Important commands
+git clone and git init:set up new repositories
+git add, git status, and git commit: used when committing new versions of files
+git log: view a list of old commits
+git mv and git rm: move and remove files tracked by Git
+git push and git pull: synchronize commits with remote repositories
+
+Initializing a repository
+ls - list files and directories look at directory from repo 
+cd medals- change directory
+git init 
+ls -a a stands for all
+
+First commits
+modified, staged- place files you are going to commit, committed
+git status
+git add medals.html
+git commit -m "Add main site page"
+git config -- global user.email "geena@yahoo.com"
+git config -- global user.name "Geena Fong"
+Add main site Page ^o
+git log -p - shows when it was committed
+
+Staging Changed files -add
+git add medals.html
+git status
+git add bronze.html
+git commit -m "Add bronze medals"
+
+Viewing changes in a files
+git diff - show me difference between files
+git add medals.html
+git diff --staged 
+git status
+
+Removing files
+rm tin.html- not necesaary
+git rm tin.html
+git commit -m "Remove tin medals"
+
+Moving files
+git add silver.txt
+git commit -m "Add silver medals"
+git mv silver.txt silver.html
+git status
+
+Unstaging changes
+git reset HEAD medals.html
+
+Discarding File modifications - redo modifcation to last commited state
+cannot undo
+git checkout --  medals.html
+git diff
+git status
+
+Undoing File Deletions
+rm medals.html
+ls
+git status
+git checkout -- medals.html
+
+Commit SHA and Undoing commits
+simple hashing algorithm 
+git revert 
+git log
+git revert c02bf
+git log
+git revert HEAD- HEAD = most recent commit
+
+Cloning a repository
+Using clones as peers
+With Git, every developer has their own repository on their machine, called their local repo.
+Repos belonging to other developers on the project are referred to as remote repos.
+Each repo is a full copy of the original repo, including all the version history.
+Developers can make commits to their own repo, independently of the others.
+Before beginning work on a new feature, you should use the network to pull commits other developers have made from a remote repo into your local repo, so that you have the latest version of the code.
+Then you can make your changes, and commit them to your local repo.
+Other developers will be able to pull the commits you've made over the network to their clones, so they can access them.
+Pushing to a central repo
+Any Git repository is capable of pulling from any other repo. Sometimes collaborators pull from each other's repos directly.
+But it's more common to declare one repo the "central" repo.
+Developers clone this central repo to their local machines over the network.
+Then, each developer begins working on their own separate set of changes.
+A developer adds their changes to this central repo by pushing commits to it over the network. *Other developers receive these commits by pulling them down from the central repo, and they can push up their own changes in return.
+This is the system that GitHub, Bitbucket and other Git hosting services support.
+Cloning repos
+The easiest way to get a new repo based off another is to clone it, to make a copy of it. This copy will have all the same files in the working directory, plus a full copy of the project's history.
+
+Normally you clone from one computer to another over the Internet or some other network. But we can also clone from one directory to another on the same computer, and everything will work the same. We're going to do that while we get used to the commands.
+
+To clone the medals repo to a repo in another directory named myclone, change to its parent directory and run:
+
+git clone medals myclone
+The first argument to git clone should be the location of the repository you want to clone. Normally, this would be the URL of a repo out on the network somewhere. But for this demonstration, we just clone from the medals repo in our local directory.
+The second argument is the name of the directory you want to clone into. We used the name myclone.
+If we run ls, we'll see a new myclone directory.
+We can change into that with cd myclone.
+If we run ls here in the working directory, we'll see copies of all our files.
+Remember ls -a shows all files, even ones that are hidden by placing a dot at the start of their names... If we run it here, we'll see another .git directory that holds a copy of our repo history.
+
+cd .. 
+git clone medals myclone
+cd myclone/
+
+Pulling changes
+When commits get added to a Git repository, they aren't automatically copied to clones of that repository. One way to distribute the new commits is to pull them in from other repos.
+
+In the original medals repo, save a gold.html file that advertises gold medals.
+medals/gold.html:
+
+<h1>Check out our gold medals!</h1>
+
+<p>Medallion: $60</p>
+<p>Ribbon: $30</p>
+Stage the file with git add gold.html, and commit it: git commit -m "Add gold medals"
+git log in the medals repo will show the new commit, but git log in the myclone repo will not.
+We need to get the commit that adds gold.html from the medals repo to the myclone repo.
+To do that, we need a link from the myclone repo back to the medals repo.
+Within a Git repository, you can add links to other repos. These linked repos are referred to as remote repos.
+We can get a list of remote repos with the git remote command.
+We see one remote repo listed here, named origin.
+$ git remote
+origin
+When you clone a Git repo, the original repo is automatically added as a remote on the clone. You can name remote repos whatever you want, but the default used when cloning is origin, because it represents the repo this clone originated from. Because of this default, you'll see a remote repo named origin on most Git repos you work with. In fact, in many cases, the origin repo will be the only remote repo, because everyone on the project just pulls changes from that single repo.
+
+Since a remote repo is already set up, we're ready to pull changes from it.
+We do this with the git pull command.
+git pull takes an argument, with the name of the remote repo you want to pull changes from. So this command will pull from origin:
+git pull origin
+But just as the repo we cloned from was set up as a remote repo automatically, it was also set up as the default repo to pull from.
+So we can actually omit the remote repo name, and just run git pull:
+git pull
+Now, we can run git log within the myclone repo. In the output we'll see the "Add gold medals" commit, just like we did in the medals repo.
+
+cd ../medals
+git add gold.html
+git remote
+git pull
+git .log
+
+Add to myclone/medals.html:
+    <div>
+        <a href="gold.html">Gold medals</a>
+    </div>
+    <div>
+        <a href="silver.html">Silver medals</a>
+    </div>
+Then stage the changes: git add medals.html, and commit them: git commit -m "Add links"
+That commit now appears in our history for the myclone repository.
+But this commit does not appear in the medals repository.
+Although we were able to run git pull in the myclone repository to pull in commits from the medals repository, we can't pull from myclone to medals yet.
+When we cloned the medals repository to the myclone repository, medals was automatically set up as a remote repo on myclone.
+But the reverse isn't true. In fact, we can try running git remote from the medals repo, and we won't see any remote repos at all.
+So we're going to need to add myclone as a remote on the medals repo.
+We can do this with the git remote add subcommand.
+git remote add takes two arguments:
+The first is the name we want to give the remote repo. We can use any name we want, but generally it should be all lower-case. We'll use a name of myclone for this remote.
+The second argument will usually be the URL of the remote repository.
+But since this "remote" repo is just another directory on our local computer, we'll give it the path to that directory instead: ../myclone
+git remote add myclone ../myclone
+Now let's try running git remote again. This time, we'll see a remote repo with the name we specified, myclone.
+For this first time running git pull, we need to provide two arguments:
+The remote repo we're pulling from: myclone
+The "branch" we want to pull: master
+By default, Git repositories start with only one branch, named master.
+Because we haven't created any other branches, our work in the myclone repo will be on the master branch there, as well.
+git pull myclone master
+That command will pull our new commit from the myclone remote repo into the medals repo.
+
+git add medals.html
+git log
+cd ../medals
+git remote add myclone ../myclone
+git pull myclone master
+git branch
+git log -p
+
+Pushing commits to GitHub
+git remote add orgin http.github/...
+git push -u origin master 
+
+git clone URL
+
+HTTP basics
+Like a phone conversation
+Even more rules, word choice matters
+
+HTTP Requests using Telnet
+connecting to and communicting with a device
+
+telnet httpbin.org 80
+GET / HTTP/1.1
+Host:httpbin.org 
+
+telnet httpbin.org 80
+GET /xml HTTP/1.1
+
+telnet httpbin.org 80
+GET /treehouse HTTP/1.1
+
+HTTP Request Format
+1. request line get(view resource without making changes) or post (making changes)
+GET | POST [uri]HTTP/[version] GET /xml HTTP/1.1
+2. Headers
+[Header Name]: [Header Value]
+(each on its own line)
+Host: httpbin.org
+User-agent: telnet
+Accept Language: en-US
+3. Blank line
+4. Request Body (optional) only for POST request
+
+HTTP Response Format
+1. Status-line 
+HTTP/[version] [status code] [status message] HTTP/1.1 200 OK
+2. Headers
+[Header Name]: [Header Value] 
+server:nginx Date, Content Type-application
+3. Blank line
+4. Request Response
+HTTP is Stateless- no record of previous interactions, and each interaction is processed only with the information that comes with that particular interaction
+
+Sending Data with a GET Request
+Though often times HTTP is used simply for requesting information, without any additional information needed from the requestor, at times it is necessary to send additional data to the server, beyond the name of the resource. In this video, we explore the first way of sending data, and that is via the query string in the URI of a GET request.
+GET /get?firstname=Chris&language=English HTTP/1.1
+GET /get?company=Treehouse&city=Portland HTTP/1.1
+
+Sending Data with a POST Request
+There are many times in which HTTP is used to send a request whose purpose is to modify data on the server. POST requests are used for this purpose, and are constructed a bit differently than GET requests that are sending data. In a POST request, data is sent in the request payload instead of in the URI. This video shows you exactly how this is accomplished
+POST /post HTTP/1.1
+Host: httpbin.org
+Content-length: 32
+
+firstname=Chris&language=English
+
+The Browswer as a GUI for HTTP
+Using Developer Tools--
+Network Tab
+Request Headers
+User-agent: 
+Response Headers:
+
+HTML Review and URIs vs URLs
+uniform resource locator (URL)
+"" identifier (URI)
+URL is an URI
+URL list http as protocol as well as host name
+
+Using Anchors for GET requests
+Using Forms for GET Requests
+HTML Form
+1. Form tags
+2. Form method attribute - optional, defaults to "get"
+3. Form action attribute
+4. Form elements for users to provide information
+5. Submit button
+
+<form method="post" action ="/register">
+
+Using forms for POST request
+
+
+AJAX Asynchronous JavaScript and XML update html without reloading a new webpage
+Request server, then response from server
+how it works--xmlhttprequest object
+1. Create an XMLHTTP Request object
+2. Create a callback function
+3. Open a request
+4. Send the request
+
+ var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+    document.getElementById("footer").innerHTML = xhr.responseText;
+  }
+   
+};
+    xhr.open('GET', 'sidebar.html');
+    xhr.send();
+
+GET and POST
+There are two common methods for sending HTTP requests:
+
+GET. Used for most requests. Browser uses the GET method whenever it requests a new web page, CSS file, image, and so on. Use GET when you want to "get" something from the server.
+POST. Used frequently with web forms to send data to store in a database. Use POST when sending data that will store, delete or update information from a database.
+
+&    Space   +
+%26    +     %2B
+
+Downsides
+get- all data sent in a url, if needed sensitive info, it will appear in browswer history, only a limited amount in Browser
+post-seperate from URl, in Body
+
+AJAX Response Formats
+EML=extensible markup language
+<contacts>
+ <contact>
+ <name>Andrew</name>
+ <contact>
+</contacts>
+parsing
+
+AJAX Security Limitations
+JSONP- JSON w/padding
+CORS-Cross origin resource sharing
+
+AJAX callbacks
+1. Create an XMLHTTP Request object
+2. Create a callback function
+3. Open a request
+4. Send the request
+
+readystate- from 1-4
+
+var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+        if(xhr.status === 200)
+    document.getElementById("footer").innerHTML = xhr.responseText;
+  } else if(xhr.status === 404){
+      //file not found
+  } else {
+      alert(xhr.statusText)
+  }
+   
+};
+    xhr.open('GET', 'sidebar.html');
+    xhr.send();
+
+
+JSON
+JavaScript Object Notation
+[  
+  {
+    "name" : "Aimee"
+    "inoffice" : false;
+
+    "name" : "Amit"
+    "inoffice" : true;
+  }
+]
+
+Parsing JSON Data
+console.log(xhr.responseText)
+console.log(typeof xhr.responseText) - is it a string or object?
+
+var employees = JSON.parse(xhr.responseText);
+console.log(typeof xhr.responseText)
+
+Processing JSON Data
+1. Create a new HTML list item
+2. Check the "inoffice" property
+3. Get the value for the "name" propert; insert it inside the <li>
+4. Close the <li> tag
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function (){
+  if(xhr.readyState === 4){
+    var employees = JSON.parse(xhr.responseText);
+    var statusHTML = '<ul class="bulleted">';
+    for(var i = 0; i<employees.length; i+=1){
+     if (employees[i].inoffice === true){
+      statusHTML += '<li class="in">'; 
+     } else{
+       statusHTML += '<li class="out">'
+       }
+      statusHTML += employees[i].name;
+      statusHTML += '</li>;
+    }
+   statusHTML += '</ul>';
+   document.getElementById('employeeList').innerHTML = statusHTML;
+  }
+};
+xhr.open('GET', 'data/employees.json');
+xhr.send();
+
+
+var roomRequest = new XMLHttpRequest();
+roomRequest.onreadystatechange = function (){
+  if(roomRequest.readyState === 4){
+    var rooms = JSON.parse(roomRequest.responseText);
+    var statusHTML = '<ul class="bulleted">';
+    for(var i = 0; i<rooms.length; i+=1){
+     if (rooms[i].available === true){
+      statusHTML += '<li class="in">'; 
+     } else{
+       statusHTML += '<li class="out">'
+       }
+      statusHTML += rooms[i].room;
+      statusHTML += '</li>;
+    }
+   statusHTML += '</ul>';
+   document.getElementById('roomList').innerHTML = statusHTML;
+  }
+};
+roomRequest.open('GET', 'data/rooms.json');
+roomRequest.send();
+
+JQuery
+function sendAJAX() {
+    $('#ajax').load('sidebar.html');
+    $('.load').hide();
+} --same as
+
+function sendAJAX() {
+var callback = function (response){
+$.get('sidebar.html', function (response){
+    $('#ajax').html(response);
+})
+
+Shorthand methods
+var url = '/employees.php'
+var data = {
+    firstName: "Dave",
+    lastName: "McFarland"
+}
+
+}
+jQuery.get(url, data, callback); --same as-- $.get(url, data, callback);
+
+Office Status Project Using jQuery
+$(document).ready(function(){
+  var url = "../data/employees.json";
+    $.getJSON(url, function(response){
+        var statusHTML = '<ul class="bulleted">'
+        $.each(response, function(index, employee){
+            if (employee.inoffice === true){
+                statusHTML+='<li class="in">';
+            } else {
+                statusHTML +='<li class ="out">';
+            }
+            statusHTML += employee.name + '</li>';
+        })
+        statusHTML += employee.name + '</ul>';
+        $('#employeeList').html(statusHTML);
+    }); //end getJSON
+}); //end ready
+
+Posting Data with jQuery
+var url = "http://website.com/posts";
+var data = {
+    firstName: "Dave",
+    lastName: "McFarland"
+};
+$.post(url, data, callback)
+
+document.ready(function(){
+    $('form').submit(function(evt) {
+        evt.preventDefault();
+        var url = $(this).arrt("action");
+        var formData = $(this).serialize();
+        $.post(url, formData, function(response){
+            $('#signup').html("<p>Thanks for signing up! </p>");
+        })
+    })
+})
+
+$.ajax(url, settings);
+$.ajax(url, {
+    data : formData,
+    type: "POST";
+    success: function(response) {
+        $('#signup').html("<p>Thanks for signing up! </p>");
+    }
+});
+
+Handling errors
+for all jQuery methods except .load or JSONP
+}).fail(function(jqXHR){
+    var errorMessage = "<p>Sorry! There,'s been an error. ";
+    errorMessage += "Please try again later. </p>";
+    $('myDiv').html(errorMessage);
+    alert(jqXHR.status or statusText);
+})
+
+API
+application programming interface
+getting a youtube video onto your website
+?format=json
+
+$.each( array, function(i, item) {
+        
+      }
+
+Project
+$(document).ready(function(){
+  $('button').click(function() {
+    $('button').removeClass("selected");
+    $(this).addClass("selected");
+    var flickrAPI = "http://apiflickr.com/services/feeds/photots_public.gne?jsoncallback=?";
+    var animal = $(this).text();
+    var flickrOptions = { 
+      tags: animal,
+      format: "json",
+    };
+    function displayPhotots(data){
+      var photoHTML = '<ul>';
+      $.each( data.items, function(i, photo) {
+        photoHTML += '<li class="grid-25 tablet-grif-50"
+        photoHTML += '<a href="' + photo.link + '"class="image">';
+        photoHTML += '<img src=" ' + photo.media.m + '"></a></li>';
+      }
+        photoHTML +='</ul>;
+        $('#photos').html(photoHTML);
+    }
+    $.getJSON(flickerAPI, flickrOptions, displayPhotos);
+  }); 
+  
+}); //end ready
