@@ -2,13 +2,11 @@ const gallery = $('#gallery');
 const search = $('.search-container')
 const modal = $('body')
 
-
 //fetch function
 fetch('https://randomuser.me/api/?results=12&nat=us')
     .then(response => response.json())
     .then(data => fetchUsers(data.results))
     
-
 //helper functions
 function fetchUsers(data){
     let html =''
@@ -31,32 +29,42 @@ function fetchUsers(data){
     gallery.append(html);
     
     //Event Listener
-    $('.card').click(function(user){
-        $('#gallery').after(popUp(user));
-        
-    });
+    $('.card').on('click', function(){
+        popUp(data[$('.card').index(this)]);
+      });
 }
 
-function popUp(user){
+function popUp(chosen){
+    let date = chosen.dob.date
+    let month = date.slice(5,7);
+    let day = date.slice(8,10);
+    let year = date.slice(0,4);
+    console.log(year)
+
     let popUp = ''
         popUp += `
         <div class="modal-container">
-        <div class="modal">
-            <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-            <div class="modal-info-container">
-                <img class="modal-img" src=${this.user.picture.large} alt="profile picture">
-                <h3 id="name" class="modal-name cap">${this.user.name.first}, ${this.user.name.last}</h3>
-                <p class="modal-text">${this.user.email}</p>
-                <p class="modal-text cap">${this.user.location.city}, ${this.user.location.state}</p>
-                <hr>
-                <p class="modal-text">${this.user.phone}</p>
-                <p class="modal-text">${this.user.location.street}., ${this.user.location.city}, ${this.user.location.state}, ${this.user.location.postcode}</p>
-                <p class="modal-text">${this.user.dob.date}</p>
+            <div class="modal">
+                <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                <div class="modal-info-container">
+                    <img class="modal-img" src=${chosen.picture.large} alt="profile picture">
+                    <h3 id="name" class="modal-name cap">${chosen.name.first}, ${chosen.name.last}</h3>
+                    <p class="modal-text">${chosen.email}</p>
+                    <p class="modal-text cap">${chosen.location.city}, ${chosen.location.state}</p>
+                    <hr>
+                    <p class="modal-text">${chosen.phone}</p>
+                    <p class="modal-text cap">${chosen.location.street}., ${chosen.location.city}, ${chosen.location.state}, ${chosen.location.postcode}</p>
+                    <p class="modal-text">${month +'/' + day + '/' + year}</p>
+                </div>
             </div>
         </div> ` 
-};
+        
+        $('#gallery').after(popUp);
+        
+        //To close the window
+        $('strong').on('click', function(){
+            $('.modal-container').remove();
+          });
+    };
 
-//For when someone wants to close the window
-$('strong').on("click", function(){
-    $(".modal-container").hide();
-});
+
